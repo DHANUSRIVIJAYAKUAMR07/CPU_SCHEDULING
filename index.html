@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CPU Scheduler — Process Simulation Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="index.css">
+</head>
+<body class="p-colors">
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">CPU<span>.</span>SCHED</div>
+  <ul class="nav-links" id="navLinks">
+    <li><a onclick="showPage('home')" class="active" id="nav-home">Dashboard</a></li>
+    <li><a onclick="showPage('fcfs')"     id="nav-fcfs">FCFS</a></li>
+    <li><a onclick="showPage('sjf')"      id="nav-sjf">SJF</a></li>
+    <li><a onclick="showPage('priority')" id="nav-priority">Priority</a></li>
+    <li><a onclick="showPage('rr')"       id="nav-rr">Round Robin</a></li>
+  </ul>
+</nav>
+
+<!-- ===================== HOME ===================== -->
+<div class="page active" id="home">
+  <div class="hero">
+    <div class="hero-tag">⬡ CPU Process Scheduling Engine</div>
+    <h1>Schedule. Simulate.<br><em>Understand.</em></h1>
+    <p class="hero-sub">Visualize and compare four foundational CPU scheduling algorithms with real-time Gantt charts, waiting time calculations, and performance metrics.</p>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat"><div class="stat-val">4</div><div class="stat-label">Algorithms</div></div>
+    <div class="stat"><div class="stat-val">∞</div><div class="stat-label">Processes</div></div>
+    <div class="stat"><div class="stat-val">3</div><div class="stat-label">Metrics</div></div>
+    <div class="stat"><div class="stat-val">0ms</div><div class="stat-label">Latency</div></div>
+  </div>
+
+  <div class="algo-grid">
+    <div class="algo-card" style="--card-accent:#00d4ff" onclick="showPage('fcfs')">
+      <div class="card-num">01 / FCFS</div>
+      <span class="card-icon">⟶</span>
+      <h3>First Come First Serve</h3>
+      <p>The simplest scheduling algorithm. Processes are executed in the order of their arrival. Non-preemptive and easy to implement.</p>
+      <div class="card-btn">Launch Simulator</div>
+    </div>
+    <div class="algo-card" style="--card-accent:#ff6b35" onclick="showPage('sjf')">
+      <div class="card-num">02 / SJF</div>
+      <span class="card-icon">⬇</span>
+      <h3>Shortest Job First</h3>
+      <p>Prioritizes processes with the smallest burst time. Minimizes average waiting time — optimal for batch systems.</p>
+      <div class="card-btn">Launch Simulator</div>
+    </div>
+    <div class="algo-card" style="--card-accent:#7c3aed" onclick="showPage('priority')">
+      <div class="card-num">03 / PRIO</div>
+      <span class="card-icon">★</span>
+      <h3>Priority Scheduling</h3>
+      <p>Each process has a priority level. Higher priority processes run first. Supports both preemptive and non-preemptive modes.</p>
+      <div class="card-btn">Launch Simulator</div>
+    </div>
+    <div class="algo-card" style="--card-accent:#00ff88" onclick="showPage('rr')">
+      <div class="card-num">04 / RR</div>
+      <span class="card-icon">↻</span>
+      <h3>Round Robin</h3>
+      <p>Each process gets a fixed time quantum. Fair and responsive — ideal for time-sharing systems and multitasking environments.</p>
+      <div class="card-btn">Launch Simulator</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== FCFS ===================== -->
+<div class="page" id="fcfs" style="--page-accent:#00d4ff">
+  <div class="algo-page">
+    <div class="page-header">
+      <div class="page-num">01</div>
+      <div class="page-title">
+        <div class="algo-badge">First Come First Serve — Non-Preemptive</div>
+        <h2>FCFS Scheduling</h2>
+      </div>
+    </div>
+
+    <div class="explain-box">
+      <h4>Algorithm Explanation</h4>
+      <p>FCFS (First Come First Serve) is the simplest CPU scheduling algorithm. Processes are dispatched in the order of their arrival time in the ready queue — the process that arrives first gets the CPU first.</p>
+      <p>It is non-preemptive: once a process starts executing, it runs until completion. While easy to understand, it can cause the "Convoy Effect" where short processes wait behind long ones.</p>
+      <div class="props-list">
+        <span class="prop-tag good">Simple Implementation</span>
+        <span class="prop-tag good">No Starvation</span>
+        <span class="prop-tag bad">Convoy Effect</span>
+        <span class="prop-tag bad">High Wait Times</span>
+        <span class="prop-tag neutral">Non-Preemptive</span>
+      </div>
+    </div>
+
+    <div class="sim-layout">
+      <div class="input-panel">
+        <div class="panel-header">Process Configuration</div>
+        <div class="panel-body">
+          <table class="process-table">
+            <thead><tr><th>PID</th><th>Arrival</th><th>Burst</th><th></th></tr></thead>
+            <tbody id="fcfs-tbody"></tbody>
+          </table>
+          <button class="btn btn-add" onclick="addProcess('fcfs')">+ Add Process</button>
+          <div class="btn-row">
+            <button class="btn btn-primary"   onclick="runFCFS()">▶ Run</button>
+            <button class="btn btn-secondary" onclick="resetSim('fcfs')">↺ Reset</button>
+            <button class="btn btn-secondary" onclick="loadExample('fcfs')">Load Example</button>
+          </div>
+        </div>
+      </div>
+      <div class="output-panel" id="fcfs-output">
+        <div class="output-empty">
+          <div class="empty-icon">⬡</div>
+          <p>Configure processes and run simulation</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SJF ===================== -->
+<div class="page" id="sjf" style="--page-accent:#ff6b35">
+  <div class="algo-page">
+    <div class="page-header">
+      <div class="page-num">02</div>
+      <div class="page-title">
+        <div class="algo-badge">Shortest Job First — Preemptive / Non-Preemptive</div>
+        <h2>SJF Scheduling</h2>
+      </div>
+    </div>
+
+    <div class="explain-box">
+      <h4>Algorithm Explanation</h4>
+      <p>SJF selects the process with the smallest burst time from the ready queue. This minimizes the average waiting time and is provably optimal for batch processing scenarios.</p>
+      <p><strong style="color:var(--text)">Non-Preemptive SJF:</strong> Once a process starts, it runs to completion. <strong style="color:var(--text)">Preemptive SJF (SRTF):</strong> If a new process arrives with a shorter remaining burst time, it preempts the running process.</p>
+      <div class="props-list">
+        <span class="prop-tag good">Min. Avg. Wait Time</span>
+        <span class="prop-tag good">Optimal for Batch</span>
+        <span class="prop-tag bad">Starvation Risk</span>
+        <span class="prop-tag bad">Requires Burst Prediction</span>
+        <span class="prop-tag neutral">Optional Preemption</span>
+      </div>
+    </div>
+
+    <div class="sim-layout">
+      <div class="input-panel">
+        <div class="panel-header">Process Configuration</div>
+        <div class="panel-body">
+          <div class="preemptive-toggle">
+            <label for="sjf-preemptive">PREEMPTIVE (SRTF)</label>
+            <label class="toggle">
+              <input type="checkbox" id="sjf-preemptive">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <table class="process-table">
+            <thead><tr><th>PID</th><th>Arrival</th><th>Burst</th><th></th></tr></thead>
+            <tbody id="sjf-tbody"></tbody>
+          </table>
+          <button class="btn btn-add" onclick="addProcess('sjf')">+ Add Process</button>
+          <div class="btn-row">
+            <button class="btn btn-primary"   onclick="runSJF()">▶ Run</button>
+            <button class="btn btn-secondary" onclick="resetSim('sjf')">↺ Reset</button>
+            <button class="btn btn-secondary" onclick="loadExample('sjf')">Load Example</button>
+          </div>
+        </div>
+      </div>
+      <div class="output-panel" id="sjf-output">
+        <div class="output-empty"><div class="empty-icon">⬡</div><p>Configure processes and run simulation</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PRIORITY ===================== -->
+<div class="page" id="priority" style="--page-accent:#7c3aed">
+  <div class="algo-page">
+    <div class="page-header">
+      <div class="page-num">03</div>
+      <div class="page-title">
+        <div class="algo-badge">Priority Based — Preemptive / Non-Preemptive</div>
+        <h2>Priority Scheduling</h2>
+      </div>
+    </div>
+
+    <div class="explain-box">
+      <h4>Algorithm Explanation</h4>
+      <p>Each process is assigned a priority number. The CPU is allocated to the process with the highest priority (lowest number = highest priority). Equal priorities are resolved by arrival order.</p>
+      <p>The main drawback is starvation — low priority processes may wait indefinitely. This can be addressed with aging (gradually increasing priority of waiting processes).</p>
+      <div class="props-list">
+        <span class="prop-tag good">Flexible Control</span>
+        <span class="prop-tag good">Critical Tasks First</span>
+        <span class="prop-tag bad">Starvation Possible</span>
+        <span class="prop-tag neutral">Priority = Lower # Wins</span>
+      </div>
+    </div>
+
+    <div class="sim-layout">
+      <div class="input-panel">
+        <div class="panel-header">Process Configuration</div>
+        <div class="panel-body">
+          <div class="preemptive-toggle">
+            <label for="prio-preemptive">PREEMPTIVE</label>
+            <label class="toggle">
+              <input type="checkbox" id="prio-preemptive">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="notice">★ Lower priority number = Higher priority</div>
+          <table class="process-table">
+            <thead><tr><th>PID</th><th>Arrival</th><th>Burst</th><th>Priority</th><th></th></tr></thead>
+            <tbody id="priority-tbody"></tbody>
+          </table>
+          <button class="btn btn-add" onclick="addProcess('priority')">+ Add Process</button>
+          <div class="btn-row">
+            <button class="btn btn-primary"   onclick="runPriority()">▶ Run</button>
+            <button class="btn btn-secondary" onclick="resetSim('priority')">↺ Reset</button>
+            <button class="btn btn-secondary" onclick="loadExample('priority')">Load Example</button>
+          </div>
+        </div>
+      </div>
+      <div class="output-panel" id="priority-output">
+        <div class="output-empty"><div class="empty-icon">⬡</div><p>Configure processes and run simulation</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== ROUND ROBIN ===================== -->
+<div class="page" id="rr" style="--page-accent:#00ff88">
+  <div class="algo-page">
+    <div class="page-header">
+      <div class="page-num">04</div>
+      <div class="page-title">
+        <div class="algo-badge">Round Robin — Preemptive</div>
+        <h2>Round Robin Scheduling</h2>
+      </div>
+    </div>
+
+    <div class="explain-box">
+      <h4>Algorithm Explanation</h4>
+      <p>Round Robin assigns a fixed time quantum to each process in a cyclic manner. Each process runs for at most one quantum before yielding the CPU to the next process. It is inherently preemptive and designed for fairness.</p>
+      <p>The choice of time quantum is critical: too small increases context-switching overhead; too large degrades to FCFS behavior. Typical values range from 10–100ms in real systems.</p>
+      <div class="props-list">
+        <span class="prop-tag good">Fair Allocation</span>
+        <span class="prop-tag good">No Starvation</span>
+        <span class="prop-tag good">Responsive</span>
+        <span class="prop-tag bad">Context Switch Overhead</span>
+        <span class="prop-tag neutral">Quantum-Dependent</span>
+      </div>
+    </div>
+
+    <div class="sim-layout">
+      <div class="input-panel">
+        <div class="panel-header">Process Configuration</div>
+        <div class="panel-body">
+          <div class="quantum-row">
+            <label>Time Quantum</label>
+            <input type="number" id="rr-quantum" value="2" min="1" max="100">
+          </div>
+          <table class="process-table">
+            <thead><tr><th>PID</th><th>Arrival</th><th>Burst</th><th></th></tr></thead>
+            <tbody id="rr-tbody"></tbody>
+          </table>
+          <button class="btn btn-add" onclick="addProcess('rr')">+ Add Process</button>
+          <div class="btn-row">
+            <button class="btn btn-primary"   onclick="runRR()">▶ Run</button>
+            <button class="btn btn-secondary" onclick="resetSim('rr')">↺ Reset</button>
+            <button class="btn btn-secondary" onclick="loadExample('rr')">Load Example</button>
+          </div>
+        </div>
+      </div>
+      <div class="output-panel" id="rr-output">
+        <div class="output-empty"><div class="empty-icon">⬡</div><p>Configure processes and run simulation</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
